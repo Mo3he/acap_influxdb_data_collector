@@ -42,6 +42,9 @@ http://<device-ip>/#settings/apps
 
 Open the ACAP settings page, enter your InfluxDB connection details (URL, organisation, bucket, API token), select the data types you want to collect, set the poll interval, and enable collection.
 
+<img width="670" height="893" alt="Screenshot 2026-03-19 at 20 13 25" src="https://github.com/user-attachments/assets/43376481-3c61-43e2-9491-906c4141e08f" />
+
+
 ## Architecture
 
 - **C backend** — collects data via VAPIX APIs and writes to InfluxDB using the v2 line protocol
