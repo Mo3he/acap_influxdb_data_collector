@@ -1,4 +1,4 @@
-const DATA_TYPES = ['cpu','memory','network','temperature','uptime','storage','thermometry','spot_temperatures','air_quality'];
+const DATA_TYPES = ['cpu','memory','network','temperature','uptime','storage','thermometry','spot_temperature','air_quality'];
 
 document.addEventListener('DOMContentLoaded', () => {
     loadSettings();

@@ -136,8 +136,10 @@ static void collect_thermometry(InfluxDB_Config* config, const char* serial) {
 }
 
 
-static void collect_thermometry_spots(InfluxDB_Config* config, const char* serial) {
-    const char* body = "{\"apiVersion\":\"1.0\",\"method\":\"getPointStatus\"}";
+static void collect_spot_temperature(InfluxDB_Config* config, const char* serial) {
+    const char* body =
+        "{\"apiVersion\":\"1.3\",\"method\":\"getSpotTemperature\","
+        "\"params\":{\"coordinateSystem\":\"coord_neg1_1\",\"imagesource\":0}}";
     char* resp = ACAP_VAPIX_Post("thermometry.cgi", body);
     if (!resp) return;
 
@@ -145,40 +147,24 @@ static void collect_thermometry_spots(InfluxDB_Config* config, const char* seria
     free(resp);
     if (!json) return;
 
-    cJSON* data      = cJSON_GetObjectItem(json, "data");
-    cJSON* pointList = data ? cJSON_GetObjectItem(data, "pointList") : NULL;
+    cJSON* data     = cJSON_GetObjectItem(json, "data");
+    cJSON* f_temp   = data ? cJSON_GetObjectItem(data, "spotTemperature") : NULL;
+    cJSON* f_coords = data ? cJSON_GetObjectItem(data, "spotCoordinates") : NULL;
 
-    if (pointList && cJSON_IsArray(pointList)) {
-        int idx = 0;
-        cJSON* spot;
-        cJSON_ArrayForEach(spot, pointList) {
-            InfluxDB_Point* pt = InfluxDB_Point_Create("thermal_spots");
-            if (!pt) { idx++; continue; }
-
+    if (f_temp) {
+        InfluxDB_Point* pt = InfluxDB_Point_Create("thermal_spot");
+        if (pt) {
             if (serial) InfluxDB_Point_Add_Tag(pt, "serial", serial);
-
-            cJSON* name_item = cJSON_GetObjectItem(spot, "name");
-            cJSON* id_item   = cJSON_GetObjectItem(spot, "id");
-            char spot_tag[64];
-            if (name_item && name_item->valuestring && name_item->valuestring[0])
-                snprintf(spot_tag, sizeof(spot_tag), "%s", name_item->valuestring);
-            else if (id_item)
-                snprintf(spot_tag, sizeof(spot_tag), "%d", (int)id_item->valuedouble);
-            else
-                snprintf(spot_tag, sizeof(spot_tag), "%d", idx);
-            InfluxDB_Point_Add_Tag(pt, "spot", spot_tag);
-
-            cJSON* f_temp  = cJSON_GetObjectItem(spot, "temperature");
-            cJSON* f_trig  = cJSON_GetObjectItem(spot, "triggered");
-
-            if (f_temp) InfluxDB_Point_Add_Field_Float(pt, "temperature_c", f_temp->valuedouble);
-            if (f_trig) InfluxDB_Point_Add_Field_Bool(pt, "triggered",
-                            cJSON_IsTrue(f_trig) ? 1 : 0);
-
+            InfluxDB_Point_Add_Field_Float(pt, "temperature_c", f_temp->valuedouble);
+            if (f_coords && cJSON_IsArray(f_coords) && cJSON_GetArraySize(f_coords) >= 2) {
+                InfluxDB_Point_Add_Field_Float(pt, "coord_x",
+                    cJSON_GetArrayItem(f_coords, 0)->valuedouble);
+                InfluxDB_Point_Add_Field_Float(pt, "coord_y",
+                    cJSON_GetArrayItem(f_coords, 1)->valuedouble);
+            }
             if (!InfluxDB_Write(config, pt))
-                LOG_WARN("Failed to write thermal_spots point (spot=%s)\n", spot_tag);
+                LOG_WARN("Failed to write thermal_spot point\n");
             InfluxDB_Point_Free(pt);
-            idx++;
         }
     }
     cJSON_Delete(json);
@@ -425,8 +411,8 @@ static gboolean collect_and_send(gpointer user_data) {
     if (types && cJSON_IsTrue(cJSON_GetObjectItem(types, "thermometry")))
         collect_thermometry(&influxdb_config, serial);
 
-    if (types && cJSON_IsTrue(cJSON_GetObjectItem(types, "spot_temperatures")))
-        collect_thermometry_spots(&influxdb_config, serial);
+    if (types && cJSON_IsTrue(cJSON_GetObjectItem(types, "spot_temperature")))
+        collect_spot_temperature(&influxdb_config, serial);
 
     if (types && cJSON_IsTrue(cJSON_GetObjectItem(types, "air_quality")))
         collect_air_quality(&influxdb_config, serial);
