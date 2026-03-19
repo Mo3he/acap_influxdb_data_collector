@@ -13,11 +13,9 @@
       "memory": false,
       "network": false,
       "temperature": false,
-
       "uptime": false,
       "storage": false,
       "thermometry": false,
-
       "air_quality": false
     }
   },

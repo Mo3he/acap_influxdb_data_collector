@@ -324,7 +324,6 @@ static gboolean collect_and_send(gpointer user_data) {
         || cJSON_IsTrue(cJSON_GetObjectItem(types, "memory"))
         || cJSON_IsTrue(cJSON_GetObjectItem(types, "network"))
         || cJSON_IsTrue(cJSON_GetObjectItem(types, "temperature"))
-
         || cJSON_IsTrue(cJSON_GetObjectItem(types, "uptime"))
         || cJSON_IsTrue(cJSON_GetObjectItem(types, "storage"));
 
@@ -354,7 +353,6 @@ static gboolean collect_and_send(gpointer user_data) {
                 InfluxDB_Point_Add_Field_Float(point, "temperature_c", temp);
         }
 
-
         if (types && cJSON_IsTrue(cJSON_GetObjectItem(types, "uptime")))
             InfluxDB_Point_Add_Field_Float(point, "uptime_seconds", ACAP_DEVICE_Uptime());
 
@@ -372,7 +370,6 @@ static gboolean collect_and_send(gpointer user_data) {
 
     if (types && cJSON_IsTrue(cJSON_GetObjectItem(types, "thermometry")))
         collect_thermometry(&influxdb_config, serial);
-
 
     if (types && cJSON_IsTrue(cJSON_GetObjectItem(types, "air_quality")))
         collect_air_quality(&influxdb_config, serial);
@@ -540,7 +537,8 @@ int main(void) {
 
     ACAP_HTTP_Node("test", HTTP_Test_Connection);
     ACAP_HTTP_Node("debug", HTTP_Debug_AirQuality);
-    collect_timer_id = g_timeout_add_seconds(poll_interval, collect_and_send, NULL);
+    if (!collect_timer_id)
+        collect_timer_id = g_timeout_add_seconds(poll_interval, collect_and_send, NULL);
 
     main_loop = g_main_loop_new(NULL, FALSE);
     GSource* sig = g_unix_signal_source_new(SIGTERM);

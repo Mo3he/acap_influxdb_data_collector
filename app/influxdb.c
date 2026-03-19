@@ -176,7 +176,7 @@ int InfluxDB_Write(InfluxDB_Config* config, InfluxDB_Point* point) {
         curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
         if (http_code == 204) {
             success = 1;
-            LOG("InfluxDB: write OK (%s)\n", line);
+            LOG("InfluxDB: write OK (%s)\n", point->measurement);
         } else {
             LOG_WARN("InfluxDB: write returned HTTP %ld\n", http_code);
         }
