@@ -148,20 +148,13 @@ static void collect_spot_temperature(InfluxDB_Config* config, const char* serial
     if (!json) return;
 
     cJSON* data     = cJSON_GetObjectItem(json, "data");
-    cJSON* f_temp   = data ? cJSON_GetObjectItem(data, "spotTemperature") : NULL;
-    cJSON* f_coords = data ? cJSON_GetObjectItem(data, "spotCoordinates") : NULL;
+    cJSON* f_temp = data ? cJSON_GetObjectItem(data, "spotTemperature") : NULL;
 
     if (f_temp) {
         InfluxDB_Point* pt = InfluxDB_Point_Create("thermal_spot");
         if (pt) {
             if (serial) InfluxDB_Point_Add_Tag(pt, "serial", serial);
             InfluxDB_Point_Add_Field_Float(pt, "temperature_c", f_temp->valuedouble);
-            if (f_coords && cJSON_IsArray(f_coords) && cJSON_GetArraySize(f_coords) >= 2) {
-                InfluxDB_Point_Add_Field_Float(pt, "coord_x",
-                    cJSON_GetArrayItem(f_coords, 0)->valuedouble);
-                InfluxDB_Point_Add_Field_Float(pt, "coord_y",
-                    cJSON_GetArrayItem(f_coords, 1)->valuedouble);
-            }
             if (!InfluxDB_Write(config, pt))
                 LOG_WARN("Failed to write thermal_spot point\n");
             InfluxDB_Point_Free(pt);
