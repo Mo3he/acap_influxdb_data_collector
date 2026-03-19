@@ -16,6 +16,7 @@
       "uptime": false,
       "storage": false,
       "thermometry": false,
+      "spot_temperatures": false,
       "air_quality": false
     }
   },

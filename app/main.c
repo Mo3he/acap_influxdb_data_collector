@@ -136,6 +136,55 @@ static void collect_thermometry(InfluxDB_Config* config, const char* serial) {
 }
 
 
+static void collect_thermometry_spots(InfluxDB_Config* config, const char* serial) {
+    const char* body = "{\"apiVersion\":\"1.0\",\"method\":\"getPointStatus\"}";
+    char* resp = ACAP_VAPIX_Post("thermometry.cgi", body);
+    if (!resp) return;
+
+    cJSON* json = cJSON_Parse(resp);
+    free(resp);
+    if (!json) return;
+
+    cJSON* data      = cJSON_GetObjectItem(json, "data");
+    cJSON* pointList = data ? cJSON_GetObjectItem(data, "pointList") : NULL;
+
+    if (pointList && cJSON_IsArray(pointList)) {
+        int idx = 0;
+        cJSON* spot;
+        cJSON_ArrayForEach(spot, pointList) {
+            InfluxDB_Point* pt = InfluxDB_Point_Create("thermal_spots");
+            if (!pt) { idx++; continue; }
+
+            if (serial) InfluxDB_Point_Add_Tag(pt, "serial", serial);
+
+            cJSON* name_item = cJSON_GetObjectItem(spot, "name");
+            cJSON* id_item   = cJSON_GetObjectItem(spot, "id");
+            char spot_tag[64];
+            if (name_item && name_item->valuestring && name_item->valuestring[0])
+                snprintf(spot_tag, sizeof(spot_tag), "%s", name_item->valuestring);
+            else if (id_item)
+                snprintf(spot_tag, sizeof(spot_tag), "%d", (int)id_item->valuedouble);
+            else
+                snprintf(spot_tag, sizeof(spot_tag), "%d", idx);
+            InfluxDB_Point_Add_Tag(pt, "spot", spot_tag);
+
+            cJSON* f_temp  = cJSON_GetObjectItem(spot, "temperature");
+            cJSON* f_trig  = cJSON_GetObjectItem(spot, "triggered");
+
+            if (f_temp) InfluxDB_Point_Add_Field_Float(pt, "temperature_c", f_temp->valuedouble);
+            if (f_trig) InfluxDB_Point_Add_Field_Bool(pt, "triggered",
+                            cJSON_IsTrue(f_trig) ? 1 : 0);
+
+            if (!InfluxDB_Write(config, pt))
+                LOG_WARN("Failed to write thermal_spots point (spot=%s)\n", spot_tag);
+            InfluxDB_Point_Free(pt);
+            idx++;
+        }
+    }
+    cJSON_Delete(json);
+}
+
+
 /*-----------------------------------------------------
  * Data collector — AXIS D6310 air quality sensor
  *-----------------------------------------------------*/
@@ -375,6 +424,9 @@ static gboolean collect_and_send(gpointer user_data) {
 
     if (types && cJSON_IsTrue(cJSON_GetObjectItem(types, "thermometry")))
         collect_thermometry(&influxdb_config, serial);
+
+    if (types && cJSON_IsTrue(cJSON_GetObjectItem(types, "spot_temperatures")))
+        collect_thermometry_spots(&influxdb_config, serial);
 
     if (types && cJSON_IsTrue(cJSON_GetObjectItem(types, "air_quality")))
         collect_air_quality(&influxdb_config, serial);
