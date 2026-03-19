@@ -1,0 +1,9 @@
+[
+	{
+		"id": "writeError",
+		"name": "InfluxDB Write Error",
+		"state": false,
+		"show": true,
+		"data": []
+	}
+]

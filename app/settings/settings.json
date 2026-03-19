@@ -1,0 +1,27 @@
+{
+  "influxdb": {
+    "enabled": false,
+    "url": "http://localhost:8086",
+    "org": "",
+    "bucket": "",
+    "token": ""
+  },
+  "dataCollection": {
+    "pollIntervalSeconds": 30,
+    "selectedDataTypes": {
+      "cpu": false,
+      "memory": false,
+      "network": false,
+      "temperature": false,
+
+      "uptime": false,
+      "storage": false,
+      "thermometry": false,
+
+      "air_quality": false
+    }
+  },
+  "measurement": {
+    "name": "device_metrics"
+  }
+}

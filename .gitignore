@@ -1,0 +1,12 @@
+# Build artefacts
+*.eap
+build/
+
+# macOS
+.DS_Store
+
+# IDE / AI tool configs
+.clinerules
+.windsurfrules
+.cursor/
+.github/
