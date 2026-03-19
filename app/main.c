@@ -6,6 +6,8 @@
 #include <glib-unix.h>
 #include <signal.h>
 #include <sys/statvfs.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <curl/curl.h>
 
 #include "ACAP.h"
@@ -45,11 +47,14 @@ static double get_memory_usage_percent(void) {
 }
 
 static double get_temperature(void) {
-    FILE* f = fopen("/sys/class/thermal/thermal_zone0/temp", "r");
-    if (!f) return -999.0;
+    int fd = open("/sys/class/thermal/thermal_zone0/temp", O_RDONLY);
+    if (fd < 0) return -999.0;
+    char buf[32] = {0};
+    ssize_t n = read(fd, buf, sizeof(buf) - 1);
+    close(fd);
+    if (n <= 0) return -999.0;
     int millideg = 0;
-    fscanf(f, "%d", &millideg);
-    fclose(f);
+    sscanf(buf, "%d", &millideg);
     return (double)millideg / 1000.0;
 }
 
