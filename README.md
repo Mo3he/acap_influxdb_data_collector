@@ -13,6 +13,7 @@ An AXIS Camera Application Platform (ACAP) that collects metrics from Axis devic
 | Uptime | Device uptime in seconds | `device_metrics` |
 | SD Card Usage | Storage usage % | `device_metrics` |
 | Thermometry | Per-zone temperatures (thermal cameras) | `thermal_zones` |
+| Spot Temperature | Single spot temperature reading (thermal cameras) | `thermal_spot` |
 | Air Quality | CO₂, temperature, humidity, VOC, NOx, AQI, PM1.0/2.5/4.0/10.0 (AXIS D6310) | `air_quality` |
 
 ## Requirements
