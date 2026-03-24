@@ -33,6 +33,7 @@ This produces two `.eap` packages — `aarch64` for newer devices and `armv7hf` 
 
 ## Installation
 
+Get the latest version from [Releases](https://github.com/Mo3he/acap_influxdb_data_collector/releases)  
 Install the appropriate `.eap` file via the device web interface at:
 
 ```
