@@ -17,7 +17,8 @@
       "storage": false,
       "thermometry": false,
       "spot_temperature": false,
-      "air_quality": false
+      "air_quality": false,
+      "people_counter": false
     }
   },
   "measurement": {

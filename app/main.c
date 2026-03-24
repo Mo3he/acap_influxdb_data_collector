@@ -165,6 +165,37 @@ static void collect_spot_temperature(InfluxDB_Config* config, const char* serial
 
 
 /*-----------------------------------------------------
+ * Data collector — P8815-2 3D people counter
+ *-----------------------------------------------------*/
+
+static void collect_people_counter(InfluxDB_Config* config, const char* serial) {
+    char* resp = ACAP_VAPIX_Get_Path("/a3dpc/api/occupancy");
+    if (!resp) return;
+
+    cJSON* json = cJSON_Parse(resp);
+    free(resp);
+    if (!json) return;
+
+    cJSON* f_occupancy = cJSON_GetObjectItem(json, "occupancy");
+    cJSON* f_in        = cJSON_GetObjectItem(json, "total_in");
+    cJSON* f_out       = cJSON_GetObjectItem(json, "total_out");
+
+    if (f_occupancy || f_in || f_out) {
+        InfluxDB_Point* pt = InfluxDB_Point_Create("people_counter");
+        if (pt) {
+            if (serial) InfluxDB_Point_Add_Tag(pt, "serial", serial);
+            if (f_occupancy) InfluxDB_Point_Add_Field_Float(pt, "occupancy",  f_occupancy->valuedouble);
+            if (f_in)        InfluxDB_Point_Add_Field_Float(pt, "total_in",   f_in->valuedouble);
+            if (f_out)       InfluxDB_Point_Add_Field_Float(pt, "total_out",  f_out->valuedouble);
+            if (!InfluxDB_Write(config, pt))
+                LOG_WARN("Failed to write people_counter point\n");
+            InfluxDB_Point_Free(pt);
+        }
+    }
+    cJSON_Delete(json);
+}
+
+/*-----------------------------------------------------
  * Data collector — AXIS D6310 air quality sensor
  *-----------------------------------------------------*/
 
@@ -409,6 +440,9 @@ static gboolean collect_and_send(gpointer user_data) {
 
     if (types && cJSON_IsTrue(cJSON_GetObjectItem(types, "air_quality")))
         collect_air_quality(&influxdb_config, serial);
+
+    if (types && cJSON_IsTrue(cJSON_GetObjectItem(types, "people_counter")))
+        collect_people_counter(&influxdb_config, serial);
     return G_SOURCE_CONTINUE;
 }
 

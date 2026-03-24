@@ -15,6 +15,7 @@ An AXIS Camera Application Platform (ACAP) that collects metrics from Axis devic
 | Thermometry | Per-zone temperatures (thermal cameras) | `thermal_zones` |
 | Spot Temperature | Single spot temperature reading (thermal cameras) | `thermal_spot` |
 | Air Quality | CO₂, temperature, humidity, VOC, NOx, AQI, PM1.0/2.5/4.0/10.0 (AXIS D6310) | `air_quality` |
+| People Counter | Occupancy, total in, total out (P8815-2 3D people counter) | `people_counter` |
 
 ## Requirements
 
