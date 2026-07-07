@@ -21,8 +21,8 @@ An AXIS Camera Application Platform (ACAP) that collects metrics from Axis devic
 
 ## Requirements
 
-- Docker (for building)
-- An AXIS device running firmware 10.x or later
+- Docker or Podman (for building)
+- An AXIS device running firmware 10.x or later (AXIS OS 13 ready)
 - InfluxDB v2 instance
 
 ## Building
@@ -54,3 +54,7 @@ Open the ACAP settings page, enter your InfluxDB connection details (URL, organi
 - **C backend** — collects data via VAPIX APIs and writes to InfluxDB using the v2 line protocol
 - **FastCGI HTTP endpoints** — `settings` (GET/POST), `test` (connection test), `status`, `debug`
 - **GLib main loop** — periodic collection via `g_timeout_add_seconds`
+
+## Compatibility
+
+Built with the ACAP Native SDK 12.10.0 and a Manifest Schema v2 package, so it installs on **AXIS OS 13** while remaining compatible down to OS 10.x/11.x. Validated running on OS 12.10 and OS 11.11.

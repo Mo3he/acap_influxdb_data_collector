@@ -1,5 +1,6 @@
 # Build artefacts
 build/
+*.eap
 
 # macOS
 .DS_Store
