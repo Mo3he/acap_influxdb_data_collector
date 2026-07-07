@@ -8,12 +8,12 @@ each under its own license. The ACAP's own code is licensed separately (see
 
 ### ACAP SDK wrapper (`app/ACAP.c`, `app/ACAP.h`)
 - Copyright (c) 2025 Fred Juhlin
-- Project: https://github.com/pandosme/make_acap
+- Project: <https://github.com/pandosme/make_acap>
 - License: MIT (see full text below)
 
 ### cJSON (`app/cJSON.c`, `app/cJSON.h`)
 - Copyright (c) 2009-2017 Dave Gamble and cJSON contributors
-- Project: https://github.com/DaveGamble/cJSON
+- Project: <https://github.com/DaveGamble/cJSON>
 - License: MIT (see full text below)
 
 ## Dynamically linked (provided by Axis OS / ACAP SDK, not redistributed here)
@@ -21,9 +21,9 @@ each under its own license. The ACAP's own code is licensed separately (see
 These libraries are linked at build time via `pkg-config` and provided by the
 device platform; they are not bundled in the package:
 
-- **libcurl** (curl license, MIT-style) — https://curl.se/
-- **GLib / GIO** (LGPL-2.1-or-later) — https://gitlab.gnome.org/GNOME/glib
-- **FastCGI** (`fcgi`, OpenMarket FastCGI license) — https://fastcgi-archives.github.io/
+- **libcurl** (curl license, MIT-style) — <https://curl.se/>
+- **GLib / GIO** (LGPL-2.1-or-later) — <https://gitlab.gnome.org/GNOME/glib>
+- **FastCGI** (`fcgi`, OpenMarket FastCGI license) — <https://fastcgi-archives.github.io/>
 - **Axis ACAP SDK** libraries (`axevent`, `axparameter`, `vdostream`) — Axis Communications AB
 
 ---
@@ -32,7 +32,7 @@ device platform; they are not bundled in the package:
 
 The MIT License applies to the ACAP SDK wrapper and cJSON components listed above.
 
-```
+```text
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
