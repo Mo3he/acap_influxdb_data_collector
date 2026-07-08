@@ -2,7 +2,7 @@
 
 An AXIS Camera Application Platform (ACAP) that collects metrics from Axis devices and sends them to InfluxDB v2.
 
-### Disclaimer: This is an independent, community-developed ACAP package and is not an official Axis Communications product. It was developed entirely on personal time and is not affiliated with, endorsed by, or supported by Axis Communications AB. Use it at your own risk. For official Axis software, visit axis.com 
+## Disclaimer: This is an independent, community-developed ACAP package and is not an official Axis Communications product. It was developed entirely on personal time and is not affiliated with, endorsed by, or supported by Axis Communications AB. Use it at your own risk. For official Axis software, visit axis.com
 
 ## Supported data types
 
@@ -38,7 +38,7 @@ This produces two `.eap` packages — `aarch64` for newer devices and `armv7hf` 
 Get the latest version from [Releases](https://github.com/Mo3he/acap_influxdb_data_collector/releases)  
 Install the appropriate `.eap` file via the device web interface at:
 
-```
+```text
 http://<device-ip>/#settings/apps
 ```
 
@@ -47,7 +47,6 @@ http://<device-ip>/#settings/apps
 Open the ACAP settings page, enter your InfluxDB connection details (URL, organisation, bucket, API token), select the data types you want to collect, set the poll interval, and enable collection.
 
 <img width="670" height="893" alt="Screenshot 2026-03-19 at 20 13 25" src="https://github.com/user-attachments/assets/43376481-3c61-43e2-9491-906c4141e08f" />
-
 
 ## Architecture
 

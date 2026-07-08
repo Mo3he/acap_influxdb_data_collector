@@ -7,11 +7,13 @@ each under its own license. The ACAP's own code is licensed separately (see
 ## Bundled source (compiled into the application binary)
 
 ### ACAP SDK wrapper (`app/ACAP.c`, `app/ACAP.h`)
+
 - Copyright (c) 2025 Fred Juhlin
 - Project: <https://github.com/pandosme/make_acap>
 - License: MIT (see full text below)
 
 ### cJSON (`app/cJSON.c`, `app/cJSON.h`)
+
 - Copyright (c) 2009-2017 Dave Gamble and cJSON contributors
 - Project: <https://github.com/DaveGamble/cJSON>
 - License: MIT (see full text below)
