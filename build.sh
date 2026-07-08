@@ -1,14 +1,19 @@
 #!/bin/sh
+# Usage: ./build.sh [aarch64|armv7hf ...]   (default: both)
+# Override the container runtime with RUNTIME=docker|podman.
 set -e
 
-# Use docker if available, otherwise fall back to podman (drop-in compatible).
-if command -v docker >/dev/null 2>&1; then
-    RUNTIME=docker
-elif command -v podman >/dev/null 2>&1; then
-    RUNTIME=podman
-else
-    echo "Error: neither docker nor podman found in PATH" >&2
-    exit 1
+# Honor an explicit RUNTIME override; otherwise use docker if available and fall
+# back to podman (drop-in compatible).
+if [ -z "${RUNTIME:-}" ]; then
+    if command -v docker >/dev/null 2>&1; then
+        RUNTIME=docker
+    elif command -v podman >/dev/null 2>&1; then
+        RUNTIME=podman
+    else
+        echo "Error: neither docker nor podman found in PATH" >&2
+        exit 1
+    fi
 fi
 echo "=== Using container runtime: $RUNTIME ==="
 
@@ -25,8 +30,12 @@ build_arch() {
     rm -rf build
 }
 
-build_arch aarch64
-build_arch armv7hf
+if [ "$#" -gt 0 ]; then
+    for a in "$@"; do build_arch "$a"; done
+else
+    build_arch aarch64
+    build_arch armv7hf
+fi
 
 echo "=== Done ==="
 ls -lh *.eap
