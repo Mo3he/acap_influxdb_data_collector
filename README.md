@@ -1,42 +1,48 @@
-# ACAP InfluxDB Data Collector
+# InfluxDB ACAP for Axis Cameras
 
-An AXIS Camera Application Platform (ACAP) that collects metrics from Axis devices and sends them to InfluxDB v2.
+[![Release](https://img.shields.io/github/v/release/Mo3he/acap_influxdb_data_collector?style=flat)](https://github.com/Mo3he/acap_influxdb_data_collector/releases)
+[![License](https://img.shields.io/github/license/Mo3he/acap_influxdb_data_collector?style=flat)](LICENSE)
+[![Build](https://github.com/Mo3he/acap_influxdb_data_collector/actions/workflows/build.yml/badge.svg)](https://github.com/Mo3he/acap_influxdb_data_collector/actions/workflows/build.yml)
+[![Super-Linter](https://github.com/Mo3he/acap_influxdb_data_collector/actions/workflows/super-linter.yml/badge.svg)](https://github.com/Mo3he/acap_influxdb_data_collector/actions/workflows/super-linter.yml)
+[![Sponsor](https://img.shields.io/badge/Sponsor%20My%20Work-EA4AAA?style=flat&logo=github&logoColor=white)](https://github.com/sponsors/Mo3he)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/mo3he)
 
-## Disclaimer: This is an independent, community-developed ACAP package and is not an official Axis Communications product. It was developed entirely on personal time and is not affiliated with, endorsed by, or supported by Axis Communications AB. Use it at your own risk. For official Axis software, visit axis.com
+An AXIS Camera Application Platform (ACAP) that collects metrics from Axis
+devices and sends them to InfluxDB v2.
 
-## Supported data types
+> **Disclaimer:** Independent, community-developed ACAP package. Not an official
+> Axis product and not affiliated with, endorsed by, or supported by Axis
+> Communications AB or InfluxData, Inc. Use at your own risk.
 
-| Type | Description | Measurement |
-|---|---|---|
-| CPU Usage | Device CPU load % | `device_metrics` |
-| Memory Usage | RAM usage % | `device_metrics` |
-| Network | Network throughput (kbps) | `device_metrics` |
-| CPU Temperature | SoC temperature | `device_metrics` |
-| Uptime | Device uptime in seconds | `device_metrics` |
-| SD Card Usage | Storage usage % | `device_metrics` |
-| Thermometry | Per-zone temperatures (thermal cameras) | `thermal_zones` |
-| Spot Temperature | Single spot temperature reading (thermal cameras) | `thermal_spot` |
-| Air Quality | CO₂, temperature, humidity, VOC, NOx, AQI, PM1.0/2.5/4.0/10.0 (AXIS D6310) | `air_quality` |
-| People Counter | Occupancy, total in, total out (P8815-2 3D people counter) | `people_counter` |
+## Overview
 
-## Requirements
+The collector polls device metrics over VAPIX and writes them to InfluxDB v2
+using the line protocol. Supported data types:
 
-- Docker or Podman (for building)
-- An AXIS device running firmware 10.x or later (AXIS OS 13 ready)
-- InfluxDB v2 instance
+| Type | Description |
+|---|---|
+| CPU Usage | Device CPU load % |
+| Memory Usage | RAM usage % |
+| Network | Network throughput (kbps) |
+| CPU Temperature | SoC temperature |
+| Uptime | Device uptime in seconds |
+| SD Card Usage | Storage usage % |
+| Thermometry | Per-zone temperatures (thermal cameras) |
+| Spot Temperature | Single spot temperature reading (thermal cameras) |
+| Air Quality | CO2, temperature, humidity, VOC, NOx, AQI, PM1.0/2.5/4.0/10.0 (AXIS D6310) |
+| People Counter | Occupancy, total in, total out (P8815-2 3D people counter) |
 
-## Building
+## Compatibility
 
-```sh
-./build.sh
-```
-
-This produces two `.eap` packages — `aarch64` for newer devices and `armv7hf` for older ones.
+- **AXIS OS:** 10.x through 13.
+- **Architectures:** `aarch64` and `armv7hf`.
+- **Requires:** an InfluxDB v2 instance.
 
 ## Installation
 
-Get the latest version from [Releases](https://github.com/Mo3he/acap_influxdb_data_collector/releases)  
-Install the appropriate `.eap` file via the device web interface at:
+Get the latest version from
+[Releases](https://github.com/Mo3he/acap_influxdb_data_collector/releases) and
+install the appropriate `.eap` file via the device web interface at:
 
 ```text
 http://<device-ip>/#settings/apps
@@ -44,16 +50,45 @@ http://<device-ip>/#settings/apps
 
 ## Configuration
 
-Open the ACAP settings page, enter your InfluxDB connection details (URL, organisation, bucket, API token), select the data types you want to collect, set the poll interval, and enable collection.
+Open the ACAP settings page, enter your InfluxDB connection details (URL,
+organization, bucket, API token), select the data types you want to collect, set
+the poll interval, and enable collection.
 
-<img width="670" height="893" alt="Screenshot 2026-03-19 at 20 13 25" src="https://github.com/user-attachments/assets/43376481-3c61-43e2-9491-906c4141e08f" />
+<img width="670" height="893" alt="Settings screenshot" src="https://github.com/user-attachments/assets/43376481-3c61-43e2-9491-906c4141e08f" />
 
-## Architecture
+## Ports & security
 
-- **C backend** — collects data via VAPIX APIs and writes to InfluxDB using the v2 line protocol
-- **FastCGI HTTP endpoints** — `settings` (GET/POST), `test` (connection test), `status`, `debug`
-- **GLib main loop** — periodic collection via `g_timeout_add_seconds`
+The collector opens no inbound ports. It makes outbound connections only: to your
+InfluxDB v2 instance (the URL you configure) and VAPIX calls to the local device.
+The InfluxDB API token and other credentials are stored in the ACAP parameter
+store.
 
-## Compatibility
+## How it works
 
-Built with the ACAP Native SDK 12.10.0 and a Manifest Schema v2 package, so it installs on **AXIS OS 13** while remaining compatible down to OS 10.x/11.x. Validated running on OS 12.10 and OS 11.11.
+- **C backend:** collects data via VAPIX APIs and writes to InfluxDB using the
+  v2 line protocol.
+- **FastCGI HTTP endpoints:** `settings` (GET/POST), `test` (connection test),
+  `status`, `debug`.
+- **GLib main loop:** periodic collection via `g_timeout_add_seconds`.
+
+## Build from source
+
+Requires Docker or Podman.
+
+```sh
+./build.sh
+```
+
+This produces two `.eap` packages: `aarch64` for newer devices and `armv7hf`
+for older ones.
+
+## Links
+
+- [InfluxDB](https://www.influxdata.com/)
+- [Axis Communications](https://www.axis.com/)
+
+## License
+
+The packaging and app code in this repository is licensed under BSD 3-Clause (see
+[LICENSE](LICENSE)). Bundled upstream components (`ACAP.c` and cJSON, both MIT) are
+listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
