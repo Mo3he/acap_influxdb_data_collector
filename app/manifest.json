@@ -4,8 +4,8 @@
     "setup": {
       "friendlyName": "InfluxDB Data Collector",
       "appName": "acap_influxdb",
-      "vendor": "Mo3he",
-      "vendorId": "5741c1fb91",
+      "vendor": "moshe@mohome.net",
+      "vendorId": "70ee172dd9",
       "vendorUrl": "https://github.com/Mo3he",
       "runMode": "respawn",
       "version": "1.1.2",
