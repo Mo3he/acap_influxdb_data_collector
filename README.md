@@ -35,6 +35,7 @@ using the line protocol. Supported data types:
 ## Compatibility
 
 - **AXIS OS:** 10.x through 13.
+- **Verified on AXIS OS 13** (13.0.0, aarch64).
 - **Architectures:** `aarch64` and `armv7hf`.
 - **Requires:** an InfluxDB v2 instance.
 
