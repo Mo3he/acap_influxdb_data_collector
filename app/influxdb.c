@@ -11,8 +11,7 @@
 #define LOG_WARN(fmt, args...) { syslog(LOG_WARNING, fmt, ## args); printf(fmt, ## args); }
 #define MAX_LINE_PROTOCOL 8192
 
-/* Escape commas, equals signs, and spaces in tag keys/values and field keys.
- * Returns number of bytes written (not including NUL). */
+/* Line-protocol escape of ',', '=', ' ' and '\'; returns bytes written (excluding NUL). */
 static int lp_escape(char* dst, size_t dst_size, const char* src) {
     int n = 0;
     for (; *src && (size_t)n < dst_size - 1; src++) {
@@ -75,11 +74,9 @@ static char* point_to_line_protocol(InfluxDB_Point* point) {
     char escaped[512];
     int offset = 0;
 
-    /* Measurement name — escape commas and spaces */
     lp_escape(escaped, sizeof(escaped), point->measurement);
     offset += sprintf(line + offset, "%s", escaped);
 
-    /* Tags — keys and values both need escaping */
     if (point->tags && point->tags->child) {
         cJSON* tag = point->tags->child;
         while (tag) {
@@ -93,7 +90,6 @@ static char* point_to_line_protocol(InfluxDB_Point* point) {
 
     offset += sprintf(line + offset, " ");
 
-    /* Fields */
     cJSON* field = point->fields->child;
     int first = 1;
     while (field) {

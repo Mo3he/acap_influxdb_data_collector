@@ -2,7 +2,6 @@ PROG1 = acap-influxdb
 OBJS1 = main.c ACAP.c cJSON.c influxdb.c
 PROGS = $(PROG1)
 
-# Added curl for HTTP requests to InfluxDB
 PKGS = glib-2.0 gio-2.0 vdostream axevent fcgi curl
 CFLAGS += $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config --cflags $(PKGS))
 LDLIBS += $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config --libs $(PKGS))

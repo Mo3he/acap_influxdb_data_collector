@@ -99,7 +99,6 @@ static void collect_thermometry(InfluxDB_Config* config, const char* serial) {
 
             if (serial) InfluxDB_Point_Add_Tag(pt, "serial", serial);
 
-            /* Tag the zone by name if available, otherwise by numeric id */
             cJSON* name_item = cJSON_GetObjectItem(area, "name");
             cJSON* id_item   = cJSON_GetObjectItem(area, "id");
             char zone_tag[64];
@@ -382,7 +381,6 @@ static gboolean collect_and_send(gpointer user_data) {
 
     const char* serial = ACAP_DEVICE_Prop("serial");
 
-    /* device_metrics — only write if at least one system metric is enabled */
     int any_system = !types
         || cJSON_IsTrue(cJSON_GetObjectItem(types, "cpu"))
         || cJSON_IsTrue(cJSON_GetObjectItem(types, "memory"))
@@ -472,7 +470,6 @@ static void HTTP_Debug_AirQuality(const ACAP_HTTP_Response response,
                                   const ACAP_HTTP_Request  request) {
     cJSON* out = cJSON_CreateObject();
 
-    /* 1. List sensors */
     char* sensors_resp = ACAP_VAPIX_Get_Path(
         "/config/rest/airqualitymonitor/v1beta/sensors");
     cJSON_AddStringToObject(out, "sensors_raw",
@@ -483,14 +480,12 @@ static void HTTP_Debug_AirQuality(const ACAP_HTTP_Response response,
         free(sensors_resp);
     }
 
-    /* 2. GET on sensor/0 directly */
     char* s0 = ACAP_VAPIX_Get_Path(
         "/config/rest/airqualitymonitor/v1beta/sensors/0");
     cJSON_AddStringToObject(out, "sensor0_get", s0 ? s0 : "NULL");
     if (s0) { cJSON_AddItemToObject(out, "sensor0_get_parsed",
         cJSON_Parse(s0) ?: cJSON_CreateNull()); free(s0); }
 
-    /* getHistoryData: body = {"data":{"category":...,"startTime":seconds,"endTime":seconds}} */
     long long now_s   = (long long)time(NULL);
     long long start_s = now_s - 120;
     const char* hist_path =
