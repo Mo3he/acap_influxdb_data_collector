@@ -10,7 +10,7 @@
       "runMode": "respawn",
       "version": "1.1.2",
       "compatibleOsVersions": [
-        { "max": "13" }
+        { "min": "12.10.68", "max": "13" }
       ]
     },
     "configuration": {
